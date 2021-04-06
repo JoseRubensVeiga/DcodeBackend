@@ -1,17 +1,17 @@
 import express from 'express';
-import cors from 'cors';
+import 'express-async-errors';
 
-require('dotenv').config();
+import errorHandler from './middlewares/errorHandler';
+import uploadConfig from './config/upload';
 
-import authRoutes from './auth/routes';
-const server = express();
+import routes from './routes';
+import './database';
 
-server.use(express.json());
-server.use(cors());
-// server.use(authRoutes);
+const app = express();
+app.use(express.json());
 
-server.get('/', (_, res) => res.json({ ok: true }));
+app.use('/files', express.static(uploadConfig.directory));
+app.use(routes);
+app.use(errorHandler);
 
-server.listen(3333, () => {
-  console.log('Server listening on port 3333! =D');
-});
+app.listen(process.env.PORT || 3000);
